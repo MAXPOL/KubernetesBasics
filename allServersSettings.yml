@@ -1,0 +1,97 @@
+- hosts: allServers
+
+  tasks:
+
+  - ansible.posix.firewalld:
+      port: 80/tcp
+      permanent: yes
+      state: enabled
+
+  - ansible.posix.firewalld:
+      port: 443/tcp
+      permanent: yes
+      state: enabled
+
+  - ansible.posix.firewalld:
+       port: 6443/tcp
+       permanent: yes
+       state: enabled
+
+  - name: firewall add port 2379
+    ansible.posix.firewalld:
+      port: 2379/tcp
+      permanent: yes
+      state: enabled
+
+  - name: firewall add port 2380
+    ansible.posix.firewalld:
+      port: 2380/tcp
+      permanent: yes
+      state: enabled
+
+
+  - name: firewall add port 10250
+    ansible.posix.firewalld:
+      port: 10250/tcp
+      permanent: yes
+      state: enabled
+
+  - name: firewall add port 10251
+    ansible.posix.firewalld:
+      port: 10251/tcp
+      permanent: yes
+      state: enabled
+
+
+  - name: firewall add port 10252
+    ansible.posix.firewalld:
+      port: 10252/tcp
+      permanent: yes
+      state: enabled
+
+  - name: firewall add port 10255
+    ansible.posix.firewalld:
+      port: 10255/tcp
+      permanent: yes
+      state: enabled
+
+
+  - name: firewall reload
+    command: firewall-cmd --reload
+
+  - name: Copy file host
+    copy:
+      src: /cluster/hosts
+      dest: /etc/
+      mode: '0777'
+
+  - name: Copy repo file k8s
+    copy:
+      src: /cluster/k8s.repo
+      dest: /etc/yum.repos.d/
+      mode: '0777'
+
+
+  - name: Install docker
+    yum:
+      name: docker
+      state: latest
+
+  - name: Install kubelet
+    yum:
+      name: kubelet
+      state: present
+
+  - name: Install kubeadm
+    yum:
+      name: kubeadm
+      state: present
+  - name: swapoff -a
+    command: swapoff -a
+
+  - name: selinux disalbed
+    command: sed -i "s|SELINUX=enforcing|SELINUX=disabled|" /etc/selinux/config
+
+  - name: Reboot server
+    command: reboot
+
